@@ -1,0 +1,130 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+#app{padding:1.5rem 1rem;max-width:480px;margin:0 auto;font-family:var(--font-sans);}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+.prog-text{font-size:13px;color:var(--color-text-secondary);margin-bottom:6px;text-align:center;}
+.prog-wrap{background:var(--color-background-secondary);border-radius:99px;height:6px;overflow:hidden;}
+.prog-bar{background:#1D9E75;height:100%;border-radius:99px;transition:width .3s;}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 9px;border-radius:99px;margin-top:8px;}
+.N5{background:#E1F5EE;color:#0F6E56;}.N4{background:#E6F1FB;color:#185FA5;}
+.N3{background:#EEEDFE;color:#534AB7;}.N2{background:#FAECE7;color:#993C1D;}
+.header{text-align:center;margin-bottom:1.25rem;}
+.scene{width:100%;height:210px;perspective:1000px;cursor:pointer;margin-bottom:1.25rem;}
+.card{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s ease;}
+.card.flipped{transform:rotateY(180deg);}
+.face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:var(--border-radius-lg);border:.5px solid var(--color-border-tertiary);background:var(--color-background-primary);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:1.5rem;}
+.back{transform:rotateY(180deg);}
+.f-kana{font-size:15px;color:var(--color-text-secondary);letter-spacing:2px;}
+.f-kanji{font-size:40px;font-weight:500;color:var(--color-text-primary);letter-spacing:2px;}
+.f-hint{font-size:12px;color:var(--color-text-tertiary);margin-top:4px;}
+.b-meaning{font-size:32px;font-weight:500;color:var(--color-text-primary);}
+.btn-row{display:flex;gap:12px;justify-content:center;margin-bottom:.75rem;}
+.btn{flex:1;max-width:160px;padding:11px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-size:14px;font-weight:500;transition:background .15s,transform .1s;color:var(--color-text-primary);}
+.btn:active{transform:scale(.97);}
+.btn-forget{color:#A32D2D;border-color:#F09595;}.btn-forget:hover{background:#FCEBEB;}
+.btn-know{color:#0F6E56;border-color:#5DCAA5;}.btn-know:hover{background:#E1F5EE;}
+.btn-hidden{opacity:0;pointer-events:none;}
+.stats{display:flex;gap:16px;justify-content:center;font-size:13px;color:var(--color-text-secondary);}
+.sk{color:#0F6E56;font-weight:500;}.sf{color:#A32D2D;font-weight:500;}
+.done{text-align:center;padding:2rem 1rem;}
+.done h2{font-size:20px;font-weight:500;margin-bottom:1.25rem;color:var(--color-text-primary);}
+.done-row{display:flex;gap:12px;justify-content:center;margin-bottom:1.5rem;}
+.done-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1.5rem;text-align:center;}
+.done-num{font-size:28px;font-weight:500;}
+.done-lbl{font-size:12px;color:var(--color-text-secondary);margin-top:2px;}
+.btn-restart{width:100%;padding:11px;border-radius:var(--border-radius-md);border:.5px solid var(--color-border-secondary);background:var(--color-background-primary);cursor:pointer;font-size:14px;color:var(--color-text-secondary);}
+</style>
+
+<div id="app">
+  <h2 class="sr-only">JLPT 日文單字複習卡片</h2>
+  <div id="main"></div>
+</div>
+
+<script>
+const V=[
+  {k:"つづきます",j:"続きます",m:"繼續",lv:"N4"},{k:"あつまります",j:"集まります",m:"聚集、集合",lv:"N4"},
+  {k:"かわります",j:"変わります",m:"改變",lv:"N4"},{k:"しらべます",j:"調べます",m:"調查",lv:"N4"},
+  {k:"つたえます",j:"伝えます",m:"傳達",lv:"N3"},{k:"みとめます",j:"認めます",m:"承認、認可",lv:"N3"},
+  {k:"もうします",j:"申します",m:"說（謙遜語）",lv:"N3"},{k:"こわれます",j:"壊れます",m:"損壞",lv:"N4"},
+  {k:"なくなります",j:"亡くなります",m:"去世",lv:"N3"},{k:"まにあいます",j:"間に合います",m:"來得及",lv:"N3"},
+  {k:"むかえます",j:"迎えます",m:"迎接",lv:"N3"},{k:"きめます",j:"決めます",m:"決定",lv:"N4"},
+  {k:"すすめます",j:"進めます",m:"推進、前進",lv:"N3"},{k:"たのしみます",j:"楽しみます",m:"享受、期待",lv:"N5"},
+  {k:"わかれます",j:"別れます",m:"分開、道別",lv:"N4"},{k:"えらびます",j:"選びます",m:"選擇",lv:"N4"},
+  {k:"たすかります",j:"助かります",m:"得救、幫了大忙",lv:"N3"},{k:"おどろきます",j:"驚きます",m:"驚訝",lv:"N3"},
+  {k:"うごきます",j:"動きます",m:"移動、運作",lv:"N4"},{k:"あらわします",j:"表します",m:"表示、表現",lv:"N3"},
+  {k:"はずします",j:"外します",m:"取下、錯過",lv:"N3"},{k:"のこります",j:"残ります",m:"剩下、留下",lv:"N4"},
+  {k:"あいます",j:"合います",m:"符合、合適",lv:"N4"},{k:"ふえます",j:"増えます",m:"增加",lv:"N4"},
+  {k:"へります",j:"減ります",m:"減少",lv:"N4"},{k:"こまります",j:"困ります",m:"困擾、為難",lv:"N4"},
+  {k:"なれます",j:"慣れます",m:"習慣",lv:"N4"},{k:"たります",j:"足ります",m:"足夠",lv:"N3"},
+  {k:"さわります",j:"触ります",m:"觸摸",lv:"N4"},{k:"ほうこく",j:"報告",m:"報告",lv:"N3"},
+  {k:"けいかく",j:"計画",m:"計畫",lv:"N4"},{k:"れんらく",j:"連絡",m:"聯絡",lv:"N4"},
+  {k:"しょうかい",j:"紹介",m:"介紹",lv:"N4"},{k:"きかい",j:"機会",m:"機會",lv:"N3"},
+  {k:"もくてき",j:"目的",m:"目的",lv:"N3"},{k:"りゆう",j:"理由",m:"理由",lv:"N3"},
+  {k:"えいきょう",j:"影響",m:"影響",lv:"N2"},{k:"かのうせい",j:"可能性",m:"可能性",lv:"N2"},
+  {k:"かんきょう",j:"環境",m:"環境",lv:"N2"},{k:"うまくいきます",j:"うまくいきます",m:"順利進行",lv:"N3"},
+];
+
+const sh=a=>[...a].sort(()=>Math.random()-.5);
+let deck,idx,know,forget,flipped;
+
+function init(){deck=sh(V);idx=0;know=0;forget=0;flipped=false;render();}
+
+function render(){
+  const el=document.getElementById('main');
+  if(idx>=deck.length){
+    el.innerHTML=`<div class="done">
+      <h2>完成了！</h2>
+      <div class="done-row">
+        <div class="done-box"><div class="done-num sk">${know}</div><div class="done-lbl">記得</div></div>
+        <div class="done-box"><div class="done-num sf">${forget}</div><div class="done-lbl">不記得</div></div>
+      </div>
+      <button class="btn-restart" onclick="init()">再來一次</button>
+    </div>`;
+    return;
+  }
+  const w=deck[idx];
+  const pct=Math.round(idx/deck.length*100);
+  el.innerHTML=`
+    <div class="header">
+      <div class="prog-text">${idx+1} / ${deck.length}</div>
+      <div class="prog-wrap"><div class="prog-bar" style="width:${pct}%"></div></div>
+      <span class="badge ${w.lv}">${w.lv}</span>
+    </div>
+    <div class="scene" onclick="flip()">
+      <div class="card" id="card">
+        <div class="face front">
+          <div class="f-kana">${w.k}</div>
+          <div class="f-kanji">${w.j!==w.k?w.j:w.k}</div>
+          <div class="f-hint">點擊翻轉</div>
+        </div>
+        <div class="face back">
+          <div class="b-meaning">${w.m}</div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row" id="btns" style="opacity:0;pointer-events:none;transition:opacity .2s">
+      <button class="btn btn-forget" onclick="ans(false)">✕ 不記得</button>
+      <button class="btn btn-know" onclick="ans(true)">✓ 記得</button>
+    </div>
+    <div class="stats">記得：<span class="sk">${know}</span>&nbsp;&nbsp;不記得：<span class="sf">${forget}</span></div>
+  `;
+  flipped=false;
+}
+
+function flip(){
+  if(flipped)return;
+  document.getElementById('card').classList.add('flipped');
+  const b=document.getElementById('btns');
+  b.style.opacity='1';b.style.pointerEvents='auto';
+  flipped=true;
+}
+
+function ans(k){
+  if(!flipped)return;
+  k?know++:forget++;
+  idx++;render();
+}
+
+init();
+</script>
