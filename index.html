@@ -105,39 +105,33 @@ if (progress.date !== today) {
 }
 
 // ===== 單字（完整示範版）=====
-let words = JSON.parse(localStorage.getItem("words")) || [
+let words = [
 
-{front:"<ruby>続<rt>つづ</rt></ruby>きます",back:"繼續",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>見<rt>み</rt></ruby>つけます",back:"找到",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>探<rt>さが</rt></ruby>します",back:"尋找",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>受<rt>う</rt></ruby>けます",back:"接受",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>受<rt>う</rt></ruby>かります",back:"考上",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>卒業<rt>そつぎょう</rt></ruby>します",back:"畢業",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>出席<rt>しゅっせき</rt></ruby>します",back:"出席",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>休憩<rt>きゅうけい</rt></ruby>します",back:"休息",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>気<rt>き</rt></ruby>が<ruby>付<rt>つ</rt></ruby>きます",back:"注意到",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>戦<rt>たたか</rt></ruby>います",back:"戰鬥",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>達<rt>たっ</rt></ruby>します",back:"達成",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>例<rt>たと</rt></ruby>えます",back:"比喻",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>頼<rt>たよ</rt></ruby>ります",back:"依靠",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>怖<rt>こわ</rt></ruby>がります",back:"害怕",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>支<rt>ささ</rt></ruby>えます",back:"支持",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>妨<rt>さまた</rt></ruby>げます",back:"阻礙",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>沈<rt>しず</rt></ruby>みます",back:"沉沒",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>従<rt>したが</rt></ruby>います",back:"服從",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>支払<rt>しはら</rt></ruby>います",back:"付款",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>急<rt>いそ</rt></ruby>ぎます",back:"趕快",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>覚<rt>おぼ</rt></ruby>えます",back:"記住",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>忘<rt>わす</rt></ruby>れます",back:"忘記",level:1,next:Date.now(),wrong:0},
-{front:"<ruby>困<rt>こま</rt></ruby>ります",back:"困擾",level:1,next:Date.now(),wrong:0},
-{front:"長い",back:"長",level:1,next:Date.now(),wrong:0},
-{front:"短い",back:"短",level:1,next:Date.now(),wrong:0},
-{front:"明るい",back:"明亮",level:1,next:Date.now(),wrong:0},
-{front:"暗い",back:"昏暗",level:1,next:Date.now(),wrong:0},
-{front:"若い",back:"年輕",level:1,next:Date.now(),wrong:0},
-{front:"危ない",back:"危險",level:1,next:Date.now(),wrong:0},
-{front:"経験",back:"經驗",level:1,next:Date.now(),wrong:0},
-{front:"将来",back:"將來",level:1,next:Date.now(),wrong:0}
+{
+  front: "<ruby>続<rt>つづ</rt></ruby>きます<br>つづきます",
+  back: "繼續（他）",
+  level:1,next:Date.now(),wrong:0
+},
+{
+  front: "<ruby>続<rt>つづ</rt></ruby>けます<br>つづけます",
+  back: "繼續（自）",
+  level:1,next:Date.now(),wrong:0
+},
+{
+  front: "<ruby>見<rt>み</rt></ruby>つけます<br>みつけます",
+  back: "找到",
+  level:1,next:Date.now(),wrong:0
+},
+{
+  front: "<ruby>探<rt>さが</rt></ruby>します<br>さがします",
+  back: "尋找",
+  level:1,next:Date.now(),wrong:0
+},
+{
+  front: "<ruby>受<rt>う</rt></ruby>けます<br>うけます",
+  back: "參加考試／接受（他）",
+  level:1,next:Date.now(),wrong:0
+}
 
 ];
 
