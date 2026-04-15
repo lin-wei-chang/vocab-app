@@ -1,88 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日文單字複習系統</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f6fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 30px;
+}
+
+.card {
+  width: 320px;
+  height: 200px;
+  perspective: 1000px;
+}
+
+.inner {
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.6s;
+  position: relative;
+}
+
+.flipped { transform: rotateY(180deg); }
+
+.front, .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 22px;
+  background: white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  backface-visibility: hidden;
+}
+
+.back {
+  transform: rotateY(180deg);
+  background: #dfe6e9;
+}
+
+button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.remember { background: #00b894; }
+.forget { background: #d63031; }
+.mode { background: #6c5ce7; }
+
+</style>
+</head>
+
+<body>
+
+<h2>🧠 日文單字複習系統</h2>
+
+<div class="card" id="card">
+  <div id="cardInner" class="inner">
+    <div class="front" id="front"></div>
+    <div class="back" id="back"></div>
+  </div>
+</div>
+
+<div>
+  <button class="forget" onclick="mark(false)">不記得</button>
+  <button class="remember" onclick="mark(true)">記得</button>
+</div>
+
+<div>
+  <button class="mode" onclick="toggleFurigana()">假名開關</button>
+</div>
+
+<p id="info"></p>
+
 <script>
+
+// ===== 今日進度 =====
 let today = new Date().toDateString();
 
-let data = JSON.parse(localStorage.getItem("progress")) || {
+let progress = JSON.parse(localStorage.getItem("progress")) || {
   date: today,
   total: 0,
   correct: 0,
   wrong: 0
 };
 
-// 如果是新的一天 → 重置
-if (data.date !== today) {
-  data = { date: today, total: 0, correct: 0, wrong: 0 };
+if (progress.date !== today) {
+  progress = { date: today, total: 0, correct: 0, wrong: 0 };
 }
 
+// ===== 單字（完整示範版）=====
 let words = JSON.parse(localStorage.getItem("words")) || [
-  {
-    front: "<ruby>続<rt>つづ</rt></ruby>きます",
-    back: "繼續",
-    level: 1,
-    next: Date.now(),
-    wrong: 0
-  }
+
+{front:"<ruby>続<rt>つづ</rt></ruby>きます",back:"繼續",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>見<rt>み</rt></ruby>つけます",back:"找到",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>探<rt>さが</rt></ruby>します",back:"尋找",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>受<rt>う</rt></ruby>けます",back:"接受",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>受<rt>う</rt></ruby>かります",back:"考上",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>卒業<rt>そつぎょう</rt></ruby>します",back:"畢業",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>出席<rt>しゅっせき</rt></ruby>します",back:"出席",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>休憩<rt>きゅうけい</rt></ruby>します",back:"休息",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>気<rt>き</rt></ruby>が<ruby>付<rt>つ</rt></ruby>きます",back:"注意到",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>戦<rt>たたか</rt></ruby>います",back:"戰鬥",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>達<rt>たっ</rt></ruby>します",back:"達成",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>例<rt>たと</rt></ruby>えます",back:"比喻",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>頼<rt>たよ</rt></ruby>ります",back:"依靠",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>怖<rt>こわ</rt></ruby>がります",back:"害怕",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>支<rt>ささ</rt></ruby>えます",back:"支持",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>妨<rt>さまた</rt></ruby>げます",back:"阻礙",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>沈<rt>しず</rt></ruby>みます",back:"沉沒",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>従<rt>したが</rt></ruby>います",back:"服從",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>支払<rt>しはら</rt></ruby>います",back:"付款",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>急<rt>いそ</rt></ruby>ぎます",back:"趕快",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>覚<rt>おぼ</rt></ruby>えます",back:"記住",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>忘<rt>わす</rt></ruby>れます",back:"忘記",level:1,next:Date.now(),wrong:0},
+{front:"<ruby>困<rt>こま</rt></ruby>ります",back:"困擾",level:1,next:Date.now(),wrong:0},
+{front:"長い",back:"長",level:1,next:Date.now(),wrong:0},
+{front:"短い",back:"短",level:1,next:Date.now(),wrong:0},
+{front:"明るい",back:"明亮",level:1,next:Date.now(),wrong:0},
+{front:"暗い",back:"昏暗",level:1,next:Date.now(),wrong:0},
+{front:"若い",back:"年輕",level:1,next:Date.now(),wrong:0},
+{front:"危ない",back:"危險",level:1,next:Date.now(),wrong:0},
+{front:"経験",back:"經驗",level:1,next:Date.now(),wrong:0},
+{front:"将来",back:"將來",level:1,next:Date.now(),wrong:0}
+
 ];
 
+// ===== 控制 =====
 let current = 0;
+let showFurigana = true;
 
-// 儲存
-function save() {
-  localStorage.setItem("words", JSON.stringify(words));
-  localStorage.setItem("progress", JSON.stringify(data));
+// ===== 儲存 =====
+function save(){
+  localStorage.setItem("words",JSON.stringify(words));
+  localStorage.setItem("progress",JSON.stringify(progress));
 }
 
-// 選題（只選「該出現的」）
-function pickCard() {
+// ===== 選題 =====
+function pickCard(){
   let now = Date.now();
-
-  let available = words.filter(w => w.next <= now);
-
-  // 如果沒有可複習 → 強制全部
-  if (available.length === 0) {
-    available = words;
-  }
-
-  current = words.indexOf(
-    available[Math.floor(Math.random() * available.length)]
-  );
+  let available = words.filter(w=>w.next<=now);
+  if(available.length===0){available=words;}
+  current = words.indexOf(available[Math.floor(Math.random()*available.length)]);
 }
 
-// 顯示
-function render() {
-  document.getElementById("front").innerHTML = words[current].front;
+// ===== 去假名 =====
+function removeFurigana(text){
+  return text.replace(/<rt>.*?<\/rt>/g,"").replace(/<ruby>|<\/ruby>/g,"");
+}
+
+// ===== 顯示 =====
+function render(){
+  let word = words[current].front;
+  if(!showFurigana){word = removeFurigana(word);}
+  document.getElementById("front").innerHTML = word;
   document.getElementById("back").innerHTML = words[current].back;
-
   document.getElementById("info").innerText =
-    `今日: ${data.total} 題 ｜✔ ${data.correct} ❌ ${data.wrong}`;
+    `今日 ${progress.total} 題 ｜✔ ${progress.correct} ❌ ${progress.wrong}`;
 }
 
-// 記憶曲線（間隔時間）
-function getNextInterval(level) {
-  let day = 1000 * 60 * 60 * 24;
-
-  switch(level) {
-    case 1: return day * 1;
-    case 2: return day * 2;
-    case 3: return day * 4;
-    case 4: return day * 7;
-    case 5: return day * 14;
-    default: return day;
-  }
+// ===== 記憶曲線 =====
+function getInterval(level){
+  return 1000*60*60*24*level;
 }
 
-// 記得 / 不記得
-function mark(remembered) {
-  data.total++;
+// ===== 作答 =====
+function mark(remembered){
+  progress.total++;
 
-  if (remembered) {
-    data.correct++;
-    words[current].level = Math.min(words[current].level + 1, 5);
-    words[current].next = Date.now() + getNextInterval(words[current].level);
-  } else {
-    data.wrong++;
+  if(remembered){
+    progress.correct++;
+    words[current].level = Math.min(words[current].level+1,5);
+    words[current].next = Date.now()+getInterval(words[current].level);
+  }else{
+    progress.wrong++;
     words[current].level = 1;
     words[current].wrong++;
-    words[current].next = Date.now(); // 馬上再出現
+    words[current].next = Date.now();
   }
 
   save();
@@ -90,7 +199,22 @@ function mark(remembered) {
   render();
 }
 
-// 初始化
+// ===== 翻卡 =====
+document.getElementById("card").onclick = ()=>{
+  document.getElementById("cardInner").classList.toggle("flipped");
+};
+
+// ===== 假名開關 =====
+function toggleFurigana(){
+  showFurigana=!showFurigana;
+  render();
+}
+
+// ===== 啟動 =====
 pickCard();
 render();
+
 </script>
+
+</body>
+</html>
