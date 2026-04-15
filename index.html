@@ -32,7 +32,7 @@ ruby {
 }
 .front {
   flex-direction: column;
-  font-size: 28px;
+  font-size: 26px;
   line-height: 1.6;
   text-align: center;
 }
@@ -123,16 +123,24 @@ if (progress.date !== today) {
 let words = [
 
 {
-  front: "<ruby>続<rt>つづ</rt></ruby>きます",
-  back: "繼續（他）"
+  front: "つづきます<br>続きます",
+  back: "繼續（他）",
+  level:1,next:Date.now(),wrong:0
 },
 {
-  front: "<ruby>続<rt>つづ</rt></ruby>けます",
-  back: "繼續（自）"
+  front: "つづけます<br>続けます",
+  back: "繼續（自）",
+  level:1,next:Date.now(),wrong:0
 },
 {
-  front: "<ruby>見<rt>み</rt></ruby>つけます",
-  back: "找到"
+  front: "みつけます<br>見つけます",
+  back: "找到",
+  level:1,next:Date.now(),wrong:0
+},
+{
+  front: "さがします<br>探します",
+  back: "尋找",
+  level:1,next:Date.now(),wrong:0
 }
 
 ];
