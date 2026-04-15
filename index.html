@@ -1,0 +1,96 @@
+<script>
+let today = new Date().toDateString();
+
+let data = JSON.parse(localStorage.getItem("progress")) || {
+  date: today,
+  total: 0,
+  correct: 0,
+  wrong: 0
+};
+
+// 如果是新的一天 → 重置
+if (data.date !== today) {
+  data = { date: today, total: 0, correct: 0, wrong: 0 };
+}
+
+let words = JSON.parse(localStorage.getItem("words")) || [
+  {
+    front: "<ruby>続<rt>つづ</rt></ruby>きます",
+    back: "繼續",
+    level: 1,
+    next: Date.now(),
+    wrong: 0
+  }
+];
+
+let current = 0;
+
+// 儲存
+function save() {
+  localStorage.setItem("words", JSON.stringify(words));
+  localStorage.setItem("progress", JSON.stringify(data));
+}
+
+// 選題（只選「該出現的」）
+function pickCard() {
+  let now = Date.now();
+
+  let available = words.filter(w => w.next <= now);
+
+  // 如果沒有可複習 → 強制全部
+  if (available.length === 0) {
+    available = words;
+  }
+
+  current = words.indexOf(
+    available[Math.floor(Math.random() * available.length)]
+  );
+}
+
+// 顯示
+function render() {
+  document.getElementById("front").innerHTML = words[current].front;
+  document.getElementById("back").innerHTML = words[current].back;
+
+  document.getElementById("info").innerText =
+    `今日: ${data.total} 題 ｜✔ ${data.correct} ❌ ${data.wrong}`;
+}
+
+// 記憶曲線（間隔時間）
+function getNextInterval(level) {
+  let day = 1000 * 60 * 60 * 24;
+
+  switch(level) {
+    case 1: return day * 1;
+    case 2: return day * 2;
+    case 3: return day * 4;
+    case 4: return day * 7;
+    case 5: return day * 14;
+    default: return day;
+  }
+}
+
+// 記得 / 不記得
+function mark(remembered) {
+  data.total++;
+
+  if (remembered) {
+    data.correct++;
+    words[current].level = Math.min(words[current].level + 1, 5);
+    words[current].next = Date.now() + getNextInterval(words[current].level);
+  } else {
+    data.wrong++;
+    words[current].level = 1;
+    words[current].wrong++;
+    words[current].next = Date.now(); // 馬上再出現
+  }
+
+  save();
+  pickCard();
+  render();
+}
+
+// 初始化
+pickCard();
+render();
+</script>
